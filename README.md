@@ -1,4 +1,4 @@
-# peopletrack-register-form
+# vue-register-form
 
 ## Project setup
 ```
