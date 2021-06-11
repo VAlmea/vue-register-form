@@ -1,19 +1,27 @@
 <template>
-  <v-parallax height="100%"  :src="wallpaper">
+  <v-parallax height="100%" :src="wallpapper">
     <v-container>
       <v-row justify="center">
         <v-col md="6">
           <v-card elevation="2">
-            <v-card-title>Register Form</v-card-title>
-            <v-card-text
-              ><v-form ref="form" v-model="valid" lazy-validation>
+            <v-card-title>Register Member</v-card-title>
+            <v-card-text>
+              <v-form ref="form" v-model="valid" lazy-validation>
                 <v-text-field
-                  v-model="name"
+                  v-model="member.firstName"
                   :counter="10"
                   :rules="nameRules"
-                  label="Name"
+                  label="First Name"
                   required
                 ></v-text-field>
+                <v-text-field
+                  v-model="member.lastName"
+                  :counter="10"
+                  :rules="nameRules"
+                  label="Last Name"
+                  required
+                ></v-text-field>
+
                 <div>
                   <v-menu
                     ref="menu"
@@ -25,7 +33,7 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        v-model="date"
+                        v-model="member.dob"
                         label="Birthday date"
                         prepend-icon="mdi-calendar"
                         readonly
@@ -34,7 +42,7 @@
                       ></v-text-field>
                     </template>
                     <v-date-picker
-                      v-model="date"
+                      v-model="member.dob"
                       :active-picker.sync="activePicker"
                       :max="new Date().toISOString().substr(0, 10)"
                       min="1950-01-01"
@@ -42,23 +50,25 @@
                     ></v-date-picker>
                   </v-menu>
                 </div>
+
+                <v-radio-group label="Gender" v-model="member.gender">
+                  <v-radio label="Male" value="M"></v-radio>
+                  <v-radio label="Female" value="F"></v-radio>
+                </v-radio-group>
+
                 <v-text-field
-                  v-model="email"
+                  v-model="member.email"
                   :rules="emailRules"
                   label="E-mail"
                   required
                 ></v-text-field>
 
-                <v-radio-group label="Gender" v-model="gender">
-                  <v-radio label="Male" value="M"></v-radio>
-                  <v-radio label="Female" value="F"></v-radio>
-                </v-radio-group>
                 <v-file-input
-                  :rules="rules"
                   accept="image/png, image/jpeg, image/bmp"
                   placeholder="Pick an avatar"
                   prepend-icon="mdi-camera"
                   label="Avatar"
+                  v-model="member.userPhoto"
                 ></v-file-input>
                 <v-card>
                   <v-card-subtitle>
@@ -78,29 +88,13 @@
                     <v-btn @click="clear">Clear</v-btn>
                   </v-card-actions>
                 </v-card>
-
-                <v-checkbox
-                  v-model="checkbox"
-                  :rules="[(v) => !!v || 'You must agree to continue!']"
-                  label="Do you agree?"
-                  required
-                ></v-checkbox>
-
                 <v-btn
                   :disabled="!valid"
                   color="success"
                   class="mr-4"
-                  @click="validate"
+                  @click="SaveForm"
                 >
-                  Validate
-                </v-btn>
-
-                <v-btn color="error" class="mr-4" @click="reset">
-                  Reset Form
-                </v-btn>
-
-                <v-btn color="warning" @click="resetValidation">
-                  Reset Validation
+                  Submit
                 </v-btn>
               </v-form>
             </v-card-text>
@@ -117,35 +111,37 @@ export default {
     options: {
       penColor: "",
     },
-    wallpaper:"",
-    gender: "M",
+    member: {
+      gender: "M",
+      firstName: "",
+      lastName: "",
+      dob: null,
+      signature: null,
+      email: "",
+      userPhoto:""
+    },
     valid: true,
-    name: "",
     activePicker: "YEAR",
-    signature: null,
-    date: null,
     menu: false,
     nameRules: [
       (v) => !!v || "Name is required",
       (v) => (v && v.length <= 10) || "Name must be less than 10 characters",
     ],
-    email: "",
     emailRules: [
       (v) => !!v || "E-mail is required",
       (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
     ],
-    select: null,
-    items: ["Item 1", "Item 2", "Item 3", "Item 4"],
-    checkbox: false,
   }),
   watch: {
     menu(val) {
       val && setTimeout(() => (this.activePicker = "YEAR"));
     },
   },
-  created(){
-    var number = Math.floor((Math.random() * 11) + 1);
-    this.wallpaper = "../assests/wallpappers/"+number+".jpg";
+  computed: {
+    wallpapper() {
+      var number = Math.floor(Math.random() * 10 + 1);
+      return require("@/assets/wallpappers/" + number + ".jpg");
+    },
   },
   methods: {
     saveDate(date) {
@@ -154,20 +150,15 @@ export default {
     validate() {
       this.$refs.form.validate();
     },
-    reset() {
-      this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
-    },
     clear() {
-      this.$refs.signaturePad.clearSignature();
+      this.$refs.member.signaturePad.clearSignature();
     },
-    save() {
+    SaveForm() {
       const { isEmpty, data } = this.$refs.signaturePad.saveSignature();
-      this.signature = data;
+      this.member.signature = data;
       console.log(isEmpty);
       console.log(data);
+      console.log(this.member.userPhoto);
     },
   },
 };

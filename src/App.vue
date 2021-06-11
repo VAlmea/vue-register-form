@@ -15,10 +15,5 @@ export default {
 };
 </script>
 <style>
-.app{
-  
-  background: url('assets/wallpapper.png');
-  background-size: cover;
-  height: 100vh;
-}
+
 </style>
