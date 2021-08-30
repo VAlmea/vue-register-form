@@ -1,20 +1,21 @@
 <template>
-  <hello-world />
+  <register-form :customer="customer" />
 </template>
 
 <script>
-  import HelloWorld from '../components/HelloWorld'
+import RegisterForm from "../components/RegisterForm.vue";
 
-  export default {
-    name: 'Home',
-    family: false,
-    id:null,
-    components: {
-      HelloWorld,
-    },
-    created(){
-      this.id = this.$route.params.id
-      this.family = this.$route.params.family
-    }
-  }
+export default {
+  name: "Home",
+  props: ["id"],
+  components: {
+    RegisterForm,
+  },
+  data: () => ({
+    customer: null,
+  }),
+  created() {
+    this.customer = this.$store.state.customers.find((c) => c.id == this.id);
+  },
+};
 </script>
