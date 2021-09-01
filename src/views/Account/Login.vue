@@ -1,42 +1,64 @@
 <template>
-  <v-card>
-      <v-card elevation="2" class="my-16">
-            <v-card-title>Register Member</v-card-title>
-            <v-card-text>
-              <v-form ref="form" v-model="valid" lazy-validation>
-                <!-- FIRST NAME & LAST NAME -->
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="member.firstName"
-                      :rules="nameRules"
-                      :counter="10"
-                      label="First name"
-                      required
-                    ></v-text-field>
-                  </v-col>
+  <v-card elevation="2" class="my-16">
+    <v-card-title>Log In</v-card-title>
+    <v-card-text>
+      <v-form ref="form" v-model="valid" lazy-validation>
+        <!-- FIRST NAME & LAST NAME -->
+        <v-text-field
+          v-model="user"
+          :rules="emailRules"
+          label="First name"
+          required
+        >
+        </v-text-field>
+        <v-text-field
+          v-model="password"
+          :rules="nameRules"
+          label="Password"
+          required
+          type="password"
+        ></v-text-field>
 
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="member.lastName"
-                      :rules="nameRules"
-                      :counter="10"
-                      label="Last name"
-                      required
-                    ></v-text-field>
-                  </v-col>
-                </v-row>
-              </v-form>
-          
+        <v-btn color="warning" @click="login">Login</v-btn>
+      </v-form>
+    </v-card-text>
   </v-card>
 </template>
 
 <script>
+import axios from "axios";
 export default {
-
-}
+  data: () => ({
+    user: "",
+    password: "",
+    valid: true,
+    nameRules: [
+      (v) => !!v || "Name is required",
+      (v) => (v && v.length <= 10) || "Name must be less than 10 characters",
+    ],
+    emailRules: [
+      (v) => !!v || "E-mail is required",
+      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+    ],
+  }),
+  methods: {
+    login() {
+      if (this.$refs.form.validate) {
+        axios
+          .post(
+            "http://localhost:5000/api/account/login",
+            { email: this.user, password: this.password },
+            {}
+          )
+          .then((result) => {
+            console.log(result.data);
+          })
+          .catch((error) => console.log(error));
+      }
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>
